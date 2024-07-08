@@ -17,13 +17,13 @@ const Posts = () => {
   }, []);
 
   return (
-    <div className="container mx-auto px-10 mb-8">
+    <section className="container mx-auto px-10 mb-4">
       <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
         {posts.map(({ node }) => (
           <PostCard key={node.slug} post={node} />
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -39,4 +39,110 @@ export const getPosts = async () => {
     } catch (error) {
       console.error('Error fetching posts:', error);
     }
-  };
+};
+
+export const getPostDetails = async (slug) => {
+  const query = gql`
+    query GetPostDetails($slug: String!) {
+      post(where: {slug: $slug}) {
+        title
+        excerpt
+        featuredImage {
+          url
+        }
+        author {
+          name
+          bio
+          photo {
+            url
+          }
+        }
+        createdAt
+        slug
+        content {
+          raw
+        }
+        category {
+          name
+          slug
+        }
+      }
+    }
+  `;
+
+  try {
+    const result = await request(graphqlAPI, query, { slug });
+    return result.post;
+  } catch (error) {
+    console.error('Error fetching post details:', error);
+  }
+};
+
+
+export const getRecentPosts = async () => {
+    const query = gql`
+      query GetPostDetails() {
+        posts(
+          orderBy: createdAt_ASC
+          last: 3
+        ) {
+          title
+          featuredImage {
+            url
+          }
+          createdAt
+          slug
+        }
+      }
+    `;
+
+    try {
+      const result = await request(graphqlAPI, query);
+      return result.posts;
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    }
+}
+
+export const getSimilarPosts = async () => {
+    const query = gql`
+      query GetPostDetails($slug: String!, $categories: [String!]) {
+        posts(
+          where: {slug_not: $slug, AND: {categories_some: {slug_in: $categories}}}
+          last: 3
+        ) {
+          title
+          featuredImage {
+            url
+          }
+          createdAt
+          slug
+        }
+      }
+    `;
+
+    try {
+      const result = await request(graphqlAPI, query);
+      return result.posts;
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    }
+}
+
+export const getCategories = async () => {
+    const query = gql`
+      query GetCategories {
+        categories {
+          name
+          slug
+        }
+      }
+    `;
+
+    try {
+      const result = await request(graphqlAPI, query);
+      return result.categories;
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+}

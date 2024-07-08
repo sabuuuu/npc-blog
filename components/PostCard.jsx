@@ -5,7 +5,7 @@ import moment from 'moment';
 const PostCard = ({ post }) => {
   const author = post.author[0];
   return (
-    <div className="bg-[#a266cf] p-4 rounded-xl shadow-lg lg:p-8 pb-10 mb-8">
+    <div className="bg-[#a266cf] p-4 rounded-xl shadow-lg lg:px-5 lg:py-7 pb-10 mb-8">
       <img src={post.featuredImage.url} alt={post.title} className="w-full h-60 object-cover rounded-t-lg" />
       <div className="flex text-center items-center justify-center my-4 w-full ">
         {author && (
@@ -31,7 +31,7 @@ const PostCard = ({ post }) => {
         <Link href={`/post/${post.slug}`}>{post.title}</Link>
       </h1>
       <p className="text-center text-lg font-medium text-[#351447] mb-6">{post.excerpt}</p>
-      <div className="text-center transform hover:translate-y-1 transition duration-200">
+      <div className="text-center">
         <Link href={`/post/${post.slug}`} className="transition duration-300 text-[#f4ecfb] font-medium hover:bg-[#502b64] bg-[#351447] px-16 py-2 rounded-lg shadow-xl">Continue reading</Link>
       </div>
     </div>
