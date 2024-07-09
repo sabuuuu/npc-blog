@@ -1,18 +1,20 @@
 'use client'
 
 import React,{useState, useEffect, useRef} from 'react'
+import {submitComment} from '@/services'
 
 const CommentsForm = ({slug}) => {
   const [error, setError] = useState(false)
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const commentEl = useRef();
   const nameEl = useRef();
-  const storeData = useRef();
+  const emailEl = useRef();
+  const storeDataEl = useRef();
 
-  // useEffect(() => {
-  //   nameEl.current.value = window.localStorage.getItem('name');
-  //   storeData.current = window.localStorage.getItem('name');
-  // }, [])
+  useEffect(() => {
+    nameEl.current.value = window.localStorage.getItem('name');
+    emailEl.current.value = window.localStorage.getItem('email');
+  }, [])
 
 
   const handleCommentSubmission = async () => {
@@ -20,24 +22,33 @@ const CommentsForm = ({slug}) => {
 
     const comment = commentEl.current.value;
     const name = nameEl.current.value;
+    const email = emailEl.current.value;
+    const storeData = storeDataEl.current.checked;
 
-    if(!comment || !name){
+    if(!comment || !name || !email) {
       setError(true)
       return
     }
 
-    const res = await fetch(`/api/posts/${slug}/comments`,{
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({comment, name})
-    })
+    const commentObj = {comment, name, email, slug}
 
-    const data = await res.json();
-    console.log(data);
+    if(storeData) {
+      window.localStorage.setItem('name', name)
+      window.localStorage.setItem('email', email)
+    } else {
+      window.localStorage.removeItem('name', name)
+      window.localStorage.removeItem('email', email)
+    }
+
+    submitComment(commentObj)
+    .then((res) => {
+      setShowSuccessMessage(true)
+      setTimeout(() => {
+        setShowSuccessMessage(false)
+      }, 3000)
+    })
   }
-  console.log(storeData)
+
   return (
     <section className="bg-[#a266cf] rounded-xl shadow-lg p-6 mb-8">
       <h3 className="text-xl mb-8 font-semibold border-b border-[#f4ecfb] border-opacity-45 pb-4 text-[#f4ecfb]">Leave a comment</h3>
@@ -46,9 +57,11 @@ const CommentsForm = ({slug}) => {
 
         <input type="text" ref={nameEl} className="p-2  border border-[#351447] w-full rounded-lg focus:outline-none bg-opacity-35 text-[#f4ecfb] bg-[#502b64] placeholder:text-[#f4ecfb] placeholder:text-opacity-35" placeholder="Name" name="name" />
 
+        <input type="email" ref={emailEl} className="p-2 border border-[#351447] w-full rounded-lg focus:outline-none bg-opacity-35 text-[#f4ecfb] bg-[#502b64] placeholder:text-[#f4ecfb] placeholder:text-opacity-35" placeholder="Email" name="email" />
+
         <div className="grid grid-cols-1 gap-4 ">
           <div className="flex items-center space-x-2">
-            <input ref={storeData} type="checkbox" id="storeData" name="storeData" value="true" className="w-4 h-4 "/>
+            <input ref={storeDataEl} type="checkbox" id="storeData" name="storeData" value="true" className="w-4 h-4 "/>
             <label className="text-[#f4ecfb]" htmlFor="storeData">Save my name and email in this browser for the next time I comment.</label>
           </div>
         </div>
